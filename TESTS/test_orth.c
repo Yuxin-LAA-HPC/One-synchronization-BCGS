@@ -12,10 +12,10 @@
 int test_orth_1s(int m, int n, int s)
 {
     int myrank_mpi, nprocs_mpi, rank;
-    int msub, mres, mstart, lwork = 16*n*s + 8*s*s;
+    int msub, mres, mstart, lwork = 5*n*s + 9*s*s* + 2*n*n;
     double *Xsub, *Qsub;
     double *R = (double *)calloc(n*n, sizeof(double));
-    double *work = (double *)calloc(lwork, sizeof(double));
+    double *work;
     double starttime, mytime, time;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank_mpi);
@@ -32,6 +32,9 @@ int test_orth_1s(int m, int n, int s)
         mstart = myrank_mpi*msub;
     //printf("rank=%d, msub=%d, mstart=%d\n", myrank_mpi, msub, mstart);
     //MPI_Barrier(MPI_COMM_WORLD);
+
+    lwork = msub*n + lwork;
+    work = (double *)calloc(lwork, sizeof(double));
 
     // Generate the test matrix X.
     Xsub = (double *)calloc(msub*n, sizeof(double));
@@ -59,17 +62,21 @@ int test_orth_1s(int m, int n, int s)
 
     test_orth_accuracy(m, n, msub, Xsub, msub, Qsub, msub, R, n, work, lwork);
 
-    free(Xsub);
-    free(Qsub);
-    free(R);
-    free(work);
+    if (Xsub) free(Xsub);
+    if (Qsub) free(Qsub);
+    if (R) free(R);
+    if (work) free(work);
     return 0;
 }
 
 int main(int argc, char **argv)
 {
     MPI_Init(&argc, &argv);
-    test_orth_1s(13, 10, 2);
+    test_orth_1s(550, 35, 5);//550,35,5
+    test_orth_1s(550, 36, 5);//550,35,5
+    test_orth_1s(550, 37, 5);//550,35,5
+    test_orth_1s(550, 38, 5);//550,35,5
+    test_orth_1s(550, 39, 5);//550,35,5
     MPI_Finalize();
     return 0;
 }

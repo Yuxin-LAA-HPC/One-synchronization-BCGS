@@ -4,12 +4,15 @@ lib = ../lib/libgmres.a
 
 OBJS = orth_1s.o util.o
 
-.PHONY: orth_1s.o util.o
+.PHONY: orth_1s.o util.o intraorth.o
 
 all: $(lib)
 
 orth_1s.o:
-	$(CC) -o orth_1s.o -c orth_1s.c
+	$(CXX) $(TPETRAINCLUDE) -o orth_1s.o -c orth_1s.c
+
+intraorth.o:
+	$(CXX) $(TPETRAINCLUDE) -o intraorth.o -c intraorth.c
 
 util.o:
 	$(CC) -o util.o -c util.c

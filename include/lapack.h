@@ -14,6 +14,8 @@ extern "C" {
     double dnrm2_(int *N, double *DX, int *INCX);
 
     // BLAS 2.
+    void dlaset_(char *UPLO, int *M, int *N, double *ALPHA, double *BETA,
+            double *A, int *LDA, int);
     void dlacpy_(char *UPLO, int *M, int *N, double *A, int *LDA, double *B,
             int *LDB, int);
 

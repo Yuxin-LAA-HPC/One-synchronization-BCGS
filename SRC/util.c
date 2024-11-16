@@ -38,9 +38,9 @@ int test_orth_accuracy(int m, int n, int msub, double *Xsub, int ldXsub,
         double *work, int lwork)
 {
     // lwork should be larger than 2*n*n.
-    if (lwork < 2*n*n)
+    if (lwork < 2*n*n + msub*n)
     {
-        printf("%% Work space is too small. It should be larger than 2*n*n.\n");
+        printf("%% Work space is too small. It should be larger than 2*n*n+msub*n.\n");
         return 1;
     }
     int myrank_mpi, length = n*n, incx = 1;

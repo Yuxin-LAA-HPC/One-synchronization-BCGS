@@ -10,7 +10,7 @@ test_orth.o: test_orth.c
 	$(CC) -o $@ -c $^
 
 test_orth.exe: test_orth.o
-	$(CC) -o $@ $^ $(LIB) $(LIBS)
+	$(CC) -o $@ $^ $(LIB) $(LIBS) -lstdc++
 
 test_bcgs.o: test_bcgs.c
 	$(CC) -o $@ -c $^
