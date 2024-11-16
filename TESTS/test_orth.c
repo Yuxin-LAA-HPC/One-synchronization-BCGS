@@ -46,7 +46,8 @@ int test_orth_1s(int m, int n, int s)
 
     dlacpy_("A", &msub, &n, Xsub, &msub, Qsub, &msub, 1);
     starttime = MPI_Wtime();
-    bcgsi2P1s(m, n, s, Qsub, msub, R, n, work, lwork);
+    //bcgsi2P1s(m, n, s, Qsub, msub, R, n, work, lwork);
+    bcgspipi2(m, n, s, Qsub, msub, R, n, work, lwork);
     mytime = MPI_Wtime() - starttime;
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Reduce(&mytime, &time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);

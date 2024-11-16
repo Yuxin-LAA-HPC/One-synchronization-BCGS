@@ -2,14 +2,14 @@ include ../make.inc
 
 lib = ../lib/libgmres.a
 
-OBJS = orth_1s.o util.o
+OBJS = orth.o util.o
 
-.PHONY: orth_1s.o util.o intraorth.o
+.PHONY: orth.o util.o intraorth.o
 
 all: $(lib)
 
-orth_1s.o:
-	$(CXX) $(TPETRAINCLUDE) -o orth_1s.o -c orth_1s.c
+orth.o:
+	$(CXX) $(TPETRAINCLUDE) -o orth.o -c orth.c
 
 intraorth.o:
 	$(CXX) $(TPETRAINCLUDE) -o intraorth.o -c intraorth.c
