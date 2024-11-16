@@ -58,9 +58,9 @@ int test_orth_accuracy(int m, int n, int msub, double *Xsub, int ldXsub,
         printf("%% Loss of orthogonality (||Q'*Q-I||): %.18f\n", norm);
     }
 
-    dgemm_("N", "N", &msub, &n, &n, &one, Qsub, &ldQsub, R, &ldR, &rone,
-            Xsub, &ldXsub, 1, 1);
     dlacpy_("A", &msub, &n, Xsub, &ldXsub, work, &msub, 1);
+    dgemm_("N", "N", &msub, &n, &n, &one, Qsub, &ldQsub, R, &ldR, &rone,
+            work, &msub, 1, 1);
     length = msub*n;
     normsub = dnrm2_(&length, work, &incx);
     normsub = normsub*normsub;

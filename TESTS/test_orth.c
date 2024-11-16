@@ -42,11 +42,29 @@ int test_orth_1s(int m, int n, int s)
     srand(myrank_mpi);
     for (int i = 0; i < msub*n; i++)
         Xsub[i] = rand()%100;
-    dlacpy_("A", &msub, &n, Xsub, &msub, Qsub, &msub, 1);
     //dprintmat_mpi("X", m, n, mstart, msub, n, Xsub, msub);
 
+    dlacpy_("A", &msub, &n, Xsub, &msub, Qsub, &msub, 1);
     starttime = MPI_Wtime();
     bcgsi2P1s(m, n, s, Qsub, msub, R, n, work, lwork);
+    mytime = MPI_Wtime() - starttime;
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Reduce(&mytime, &time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0)
+    {
+        printf("%% Test time=%f\n", time);
+        //dprintmat("R", n, n, R, n);
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    //dprintmat_mpi("Q", m, n, mstart, msub, n, Qsub, msub);
+    //MPI_Barrier(MPI_COMM_WORLD);
+
+    test_orth_accuracy(m, n, msub, Xsub, msub, Qsub, msub, R, n, work, lwork);
+
+    dlacpy_("A", &msub, &n, Xsub, &msub, Qsub, &msub, 1);
+    starttime = MPI_Wtime();
+    bcgsi21s(m, n, s, Qsub, msub, R, n, work, lwork);
     mytime = MPI_Wtime() - starttime;
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Reduce(&mytime, &time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
@@ -72,6 +90,8 @@ int test_orth_1s(int m, int n, int s)
 int main(int argc, char **argv)
 {
     MPI_Init(&argc, &argv);
+    //test_orth_1s(15, 13, 3);
+    //return 0;
     test_orth_1s(550, 35, 5);//550,35,5
     test_orth_1s(550, 36, 5);//550,35,5
     test_orth_1s(550, 37, 5);//550,35,5

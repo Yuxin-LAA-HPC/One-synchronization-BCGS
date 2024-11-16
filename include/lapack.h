@@ -10,6 +10,8 @@ extern "C" {
 #endif
     // BLAS 1.
     void dcopy_(int *N, double *DX, int *INCX, double *DY, int *INCY);
+    void daxpy_(int *N, double *DA, double *DX, int *INCX, double *DY,
+            int *INCY);
     void dscal_(int *N, double *DA, double *DX, int *INCX);
     double dnrm2_(int *N, double *DX, int *INCX);
 
