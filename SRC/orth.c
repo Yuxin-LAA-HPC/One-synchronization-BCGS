@@ -79,7 +79,7 @@ int bcgsi2P1s(int m, int n, int s, double *Xsub, int ldXsub, double *R,
 
     // Asign spaces for temporary variables.
     // lwork needs to be larger than 6ns+8s^2.
-    if (lwork < 5*n*s + 9*s*s + msub*s)
+    if (lwork < 5*n*s + 9*s*s + msub*n)
     {
         printf("%% Work space is too small. It should be larger than 6*n*s + 8*s*s.\n");
         return 1;
@@ -252,7 +252,7 @@ int bcgsi21s(int m, int n, int s, double *Xsub, int ldXsub, double *R,
 
     // Asign spaces for temporary variables.
     // lwork needs to be larger than 6ns+8s^2.
-    if (lwork < 5*n*s + 9*s*s + msub*s)
+    if (lwork < 5*n*s + 9*s*s + msub*n)
     {
         printf("%% Work space is too small. It should be larger than 6*n*s + 8*s*s.\n");
         return 1;
@@ -394,7 +394,7 @@ int bcgspipi2(int m, int n, int s, double *Xsub, int ldXsub, double *R,
 
     // Asign spaces for temporary variables.
     // lwork needs to be larger than 6ns+8s^2.
-    if (lwork < 5*n*s + 9*s*s + msub*s)
+    if (lwork < 5*n*s + 9*s*s + msub*n)
     {
         printf("%% Work space is too small. It should be larger than 6*n*s + 8*s*s.\n");
         return 1;
@@ -450,6 +450,92 @@ int bcgspipi2(int m, int n, int s, double *Xsub, int ldXsub, double *R,
         // Update R.
         dlacpy_(ALL, &mScol, &nY, Scol, &ntemp, &R[mScol*ldR], &ldR, 1);
         dgemm_(NOTRANS, NOTRANS, &mScol, &nY, &nY, &one, worktemp, &ntemp,
+                Sdiag, &nY, &one, &R[mScol*ldR], &ldR, 1, 1);
+        dgemm_(NOTRANS, NOTRANS, &nY, &nY, &nY, &one, Ydiag, &nY, Sdiag,
+                &nY, &zero, &R[mScol*ldR+mScol], &ldR, 1, 1);
+
+        mScol = mScol + s;
+    }
+    //if (myrank_mpi == 0)
+    //    printf("p=%d, mZ=%d, nZ=%d, nY=%d\n", p, mZ, nZ, nY);
+    return 0;
+}
+
+int bcgsi2(int m, int n, int s, double *Xsub, int ldXsub, double *R,
+        int ldR, double *work, int lwork)
+{
+    // Only consider the case m >> n.
+    // n >= s0+s;
+
+    int myrank_mpi, nprocs_mpi;
+    int s0 = s, p = ceil((double)(n-s0)/(double)s);
+    int msub, mres;
+    int nZ, mScol, nY;
+    double one = 1.0, zero = 0.0, rone = -1.0;
+    double *Scol, *Sdiag, *Ycol, *Ydiag, *Usub;
+    double *worktemp;
+    char TRANS[] = "T", NOTRANS[] = "N", ALL[] = "A";
+    char LOWER[] = "L";
+    MPI_Comm_rank(MPI_COMM_WORLD, &myrank_mpi);
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocs_mpi);
+
+    // Compute the location of Xsub in X.
+    msub = m/nprocs_mpi;
+    mres = m - msub*nprocs_mpi;
+    if (mres >= nprocs_mpi - myrank_mpi) {msub = msub + 1;}
+
+    // Asign spaces for temporary variables.
+    // lwork needs to be larger than 6ns+8s^2.
+    if (lwork < 5*n*s + 9*s*s + msub*s)
+    {
+        printf("%% Work space is too small. It should be larger than 6*n*s + 8*s*s.\n");
+        return 1;
+    }
+    Scol = work;
+    Ycol = Scol + n*s;
+    worktemp = Ycol + 2*n*s + 3*s*s;
+    Sdiag = worktemp + 2*n*s + 3*s*s;
+    Ydiag = Sdiag + s*s;
+    Usub = Ydiag + s*s;
+
+
+    // Perform intraorthogonalization to the first block column.
+    dlacpy_(ALL, &msub, &s, Xsub, &ldXsub, Usub, &msub, 1);
+    TSQR::Tsqr<int, double> mytsqr = init_tsqr();
+    mytsqr.factorExplicit(msub, s0, Usub, msub, Xsub, ldXsub, R, ldR, false);
+
+    mScol = s0;
+
+    for (int i = 0; i < p; i++)
+    {
+        nZ = MIN(s, n-i*s-s0);
+        dgemm_(TRANS, NOTRANS, &mScol, &nZ, &msub, &one, Xsub, &ldXsub,
+                &Xsub[mScol*ldXsub], &ldXsub, &zero, worktemp, &mScol, 1, 1);
+        MPI_Allreduce(worktemp, Scol, mScol*nZ, MPI_DOUBLE, MPI_SUM,
+                MPI_COMM_WORLD);
+        dlaset_(LOWER, &nZ, &nZ, &zero, &zero, Sdiag, &nZ, 1);
+        dlacpy_(ALL, &msub, &mScol, Xsub, &ldXsub, Usub, &msub, 1);
+        dgemm_(NOTRANS, NOTRANS, &msub, &nZ, &mScol, &rone, Usub, &msub, Scol,
+                &mScol, &one, &Xsub[ldXsub*mScol], &ldXsub, 1, 1);
+        dlacpy_(ALL, &msub, &nZ, &Xsub[ldXsub*mScol], &ldXsub, Usub,
+                &msub, 1);
+        mytsqr.factorExplicit(msub, nZ, Usub, msub, &Xsub[ldXsub*mScol],
+                ldXsub, Sdiag, nZ, false);
+        dgemm_(TRANS, NOTRANS, &mScol, &nZ, &msub, &one, Xsub, &ldXsub,
+                &Xsub[mScol*ldXsub], &ldXsub, &zero, Ycol, &mScol, 1, 1);
+        MPI_Allreduce(Ycol, worktemp, mScol*nZ, MPI_DOUBLE,
+                MPI_SUM, MPI_COMM_WORLD);
+        nY = nZ;
+        dlaset_(LOWER, &nY, &nY, &zero, &zero, Ydiag, &nY, 1);
+        dgemm_(NOTRANS, NOTRANS, &msub, &nY, &mScol, &rone, Xsub, &ldXsub,
+                worktemp, &mScol, &one, &Xsub[ldXsub*mScol], &ldXsub, 1, 1);
+        dlacpy_(ALL, &msub, &nZ, &Xsub[ldXsub*mScol], &ldXsub, Usub,
+                &msub, 1);
+        mytsqr.factorExplicit(msub, nZ, Usub, msub, &Xsub[ldXsub*mScol],
+                ldXsub, Ydiag, nZ, false);
+        // Update R.
+        dlacpy_(ALL, &mScol, &nY, Scol, &mScol, &R[mScol*ldR], &ldR, 1);
+        dgemm_(NOTRANS, NOTRANS, &mScol, &nY, &nY, &one, worktemp, &mScol,
                 Sdiag, &nY, &one, &R[mScol*ldR], &ldR, 1, 1);
         dgemm_(NOTRANS, NOTRANS, &nY, &nY, &nY, &one, Ydiag, &nY, Sdiag,
                 &nY, &zero, &R[mScol*ldR+mScol], &ldR, 1, 1);
