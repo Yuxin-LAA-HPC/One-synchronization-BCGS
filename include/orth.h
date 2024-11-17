@@ -13,6 +13,8 @@ int bcgspipi2(int m, int n, int s, double *Xsub, int ldXsub, double *R,
         int ldR, double *work, int lwork);
 int bcgsi2(int m, int n, int s, double *Xsub, int ldXsub, double *R,
         int ldR, double *work, int lwork);
+int bcgsi2P2s(int m, int n, int s, double *Xsub, int ldXsub, double *R,
+        int ldR, double *work, int lwork);
 
 //TSQR::Tsqr<int, double> init_tsqr();
 //int intraorth_tsqr(int msub, int s0, double *Xsub, int ldXsub, double *Qsub,
