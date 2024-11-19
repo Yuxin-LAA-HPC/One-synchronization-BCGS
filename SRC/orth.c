@@ -5,11 +5,11 @@
 #include "../include/orth.h"
 #include "../include/util.h"
 #include "../include/lapack.h"
-#include "/home/yxma2/package/tpetra/include/Tsqr.hpp"
-#include "/home/yxma2/package/tpetra/include/Tsqr_TeuchosMessenger.hpp"
-#include "/home/yxma2/package/tpetra/include/Teuchos_DefaultMpiComm.hpp"
-#include "/home/yxma2/package/tpetra/include/Tsqr_NodeTsqrFactory.hpp"
-#include "/home/yxma2/package/tpetra/include/Tsqr_Random_NormalGenerator.hpp"
+#include "../tpetra/include/Tsqr.hpp"
+#include "../tpetra/include/Tsqr_TeuchosMessenger.hpp"
+#include "../tpetra/include/Teuchos_DefaultMpiComm.hpp"
+#include "../tpetra/include/Tsqr_NodeTsqrFactory.hpp"
+#include "../tpetra/include/Tsqr_Random_NormalGenerator.hpp"
 
 TSQR::Tsqr<int, double> init_tsqr()
 {
