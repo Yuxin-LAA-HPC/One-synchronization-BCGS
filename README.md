@@ -7,7 +7,7 @@ to our paper:
 
 The following variants have been implementated in this code:
 
-* BCGSI+ (function bcgsi2): Also named as BCGS2, the classical reorthogonalized BCGS algorithm.
+* BCGSI+ (function bcgsi2): Also known as BCGS2, the classical reorthogonalized BCGS algorithm.
 
 * BCGS-PIPI+ (function bcgspipi2): A two-synchronization variant proposed by [1].
 
@@ -35,14 +35,14 @@ The users could accordingly modify the links of these related packages to compil
 
 * SRC/:
 
-util.c: Includes functions to test the accuracy and to print matrices.
++ util.c: Includes functions to test the accuracy and to print matrices.
 
-orth.c: Includes all different variants of reorthogonalized BCGS.
++ orth.c: Includes all different variants of reorthogonalized BCGS.
 
 
 * TESTS/:
 
-test_orth.c: Compare the performance of different variants of reorthogonalized BCGS and also check the accuracy.
++ test_orth.c: Compare the performance of different variants of reorthogonalized BCGS and also check the accuracy.
 
 ## Acknowledgement
 
@@ -52,6 +52,7 @@ Neither the European Union nor the granting authority can be held responsible fo
 
 ## References
 [1] E. Carson, K. Lund, Y. Ma, and E. Oktay. Reorthogonalized Pythagorean variants of block classical Gram--Schmidt. SIAM Journal on Matrix Analysis and Applications 46(1), 310--340 (2025).
+
 [2] I. Yamazaki, S. Thomas, M. Hoemmen, E. G. Boman, K. Swirydowicz, and J. J. Eilliot.
 Low-synchronization orthogonalization schemes for s-step and pipelined Krylov solvers in
 Trilinos, in Proceedings of the 2020 SIAM Conference on Parallel Processing for Scientific
