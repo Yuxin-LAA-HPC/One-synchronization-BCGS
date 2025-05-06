@@ -33,14 +33,14 @@ The users could accordingly modify the links of these related packages to compil
 
 ### Structure of the code
 
-* SRC/:
+#### SRC/:
 
 + util.c: Includes functions to test the accuracy and to print matrices.
 
-+ orth.c: Includes all different variants of reorthogonalized BCGS.
++ orth.c: Includes low-synchronization variants of reorthogonalized BCGS.
 
 
-* TESTS/:
+#### TESTS/:
 
 + test_orth.c: Compare the performance of different variants of reorthogonalized BCGS and also check the accuracy.
 
