@@ -1,4 +1,4 @@
-This code is for comparing different variants of reorthogonalized block
+This code is for comparing different low-synchronization variants of reorthogonalized block
 classical Gram--Schmidt (BCGS) algorithms on distributed memory systems, according
 to our paper:
 
@@ -9,42 +9,42 @@ The following variants have been implementated in this code:
 
 * BCGSI+ (function bcgsi2): Also named as BCGS2, the classical reorthogonalized BCGS algorithm.
 
-* BCGS-PIPI+ (function bcgspipi2): A two-sync variant proposed by [1].
+* BCGS-PIPI+ (function bcgspipi2): A two-synchronization variant proposed by [1].
 
-* BCGSI+P-1S (function bcgsi2P1s): Our new one-sync variant.
+* BCGSI+P-1S (function bcgsi2P1s): Our new one-synchronization variant.
 
-* BCGSI+P-2S (function bcgsi2P2s): Our new two-sync variant.
+* BCGSI+P-2S (function bcgsi2P2s): Our new two-synchronization variant.
 
-* BCGSI+A-1S (function bcgsi21s): A one-sync variant proposed by [2].
+* BCGSI+A-1S (function bcgsi21s): A one-synchronization variant proposed by [2].
 
-# Remarks for running this code
+## Remarks for running this code
 
-## Envionment
+### Envionment
 
 This code requires packages including
 
-1. OPENBLAS, LAPACK, and SCALAPACK.
+* OPENBLAS, LAPACK, and SCALAPACK.
 
-2. Trilinos (or the sub-package Tpetra in Trilinos).
+* Trilinos (or the sub-package Tpetra in Trilinos).
 The link of Trilinos: https://trilinos.github.io
 
 We give an example of make.inc called make.inc.example.
 The users could accordingly modify the links of these related packages to compile this code.
 
-## Structure of the code
+### Structure of the code
 
-SRC/:
+* SRC/:
 
 util.c: Includes functions to test the accuracy and to print matrices.
 
 orth.c: Includes all different variants of reorthogonalized BCGS.
 
 
-TESTS/:
+* TESTS/:
 
 test_orth.c: Compare the performance of different variants of reorthogonalized BCGS and also check the accuracy.
 
-# Acknowledgement
+## Acknowledgement
 
 This project is supported by the European Union (ERC, InEXASCALE, 101075632).
 Views and opinions expressed are those of the authors only and do not necessarily reflect those of the European Union or the European Research Council.
